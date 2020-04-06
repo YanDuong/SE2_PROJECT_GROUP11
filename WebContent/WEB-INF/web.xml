@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>WEB_PROJECT</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+<servlet>
+		<servlet-name>CountryServlet</servlet-name>
+		<servlet-class>servlet.CountryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CountryServlet</servlet-name>
+		<url-pattern>/newCountryForm</url-pattern>
+		<url-pattern>/addNewCountry</url-pattern>
+		<url-pattern>/updateCountryStatistics</url-pattern>
+		<url-pattern>/deleteCountry</url-pattern>
+		<url-pattern>/showUpdateForm</url-pattern>
+		<url-pattern>/list</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>CityServlet</servlet-name>
+		<servlet-class>servlet.CityServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CityServlet</servlet-name>
+		<url-pattern>/newCityForm</url-pattern>
+		<url-pattern>/addNewCity</url-pattern>
+		<url-pattern>/updateCityStatistics</url-pattern>
+		<url-pattern>/deleteCity</url-pattern>
+		<url-pattern>/showCitiesUpdateForm</url-pattern>
+		<url-pattern>/cities-list</url-pattern>
+	</servlet-mapping>
+	
+
+</web-app>
