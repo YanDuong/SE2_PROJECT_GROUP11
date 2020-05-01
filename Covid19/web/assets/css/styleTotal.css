@@ -1,0 +1,93 @@
+
+/* Feature Area css
+============================================================================================ */
+.feature_area {
+    background: #f9f9ff;
+}
+
+.feature_area.feature_tow {
+    background: #fff;
+}
+
+.feature_area.feature_tow .feature_item {
+    background: #f9f9ff;
+}
+
+.feature_area.feature_tow .feature_item:hover {
+    background: #fff;
+}
+
+.feature_inner {
+    margin-bottom: -30px;
+}
+
+.feature_item {
+    padding: 50px 35px;
+    border-radius: 10px;
+    transition: all 300ms linear 0s;
+    background: #fff;
+    margin-bottom: 30px;
+}
+
+.feature_item i {
+    margin-bottom: 35px;
+    display: block;
+}
+
+.feature_item i:before {
+    margin-left: 0px;
+    font-size: 60px;
+    color: #e1e1e1;
+    line-height: 60px;
+}
+
+.feature_item h4 {
+    color: #222222;
+    font-size: 21px;
+    font-family: "Heebo", sans-serif;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+.feature_item td {
+    color: #222222;
+    font-size: 21px;
+    font-family: "Heebo", sans-serif;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.feature_item p {
+    margin-bottom: 0px;
+}
+
+.feature_item .main_btn {
+    padding: 0px 30px;
+    line-height: 38px;
+}
+
+.feature_item:hover {
+    box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.08);
+    border-color: #fff;
+}
+
+.feature_item:hover i:before {
+    background: #f79d00;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #f79d00, #64f38c);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #f79d00, #64f38c);
+    /*    background: linear-gradient(to right, #8490ff 0%, #62bdfc 70%);*/
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.main_title h2{
+    text-align: center;
+    font-family: "Roboto", sans-serif;
+}
+.feature_item h4{
+    text-align: center;
+    font-size: xx-large;
+}
+/* End Feature Area css
