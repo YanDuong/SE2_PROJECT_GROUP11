@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Scraping Data
+import net.se2project.covidtracker.model.Country;
 import net.se2project.covidtracker.model.Vietnam;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,17 +21,17 @@ import static connect.DBConnect.getConnection;
 
 public class VietnamDAO implements AutoCloseable {
 
-    private static final String INSERT_PROVINCE_SQL = "INSERT INTO cities (country_name, total_cases,active_cases, total_recovered, total_death) VALUES (?, ?, ?, ?, ?);";
+    private static final String INSERT_PROVINCE_SQL = "INSERT INTO city (country_name, total_cases,active_cases, total_recovered, total_death) VALUES (?, ?, ?, ?, ?);";
 
-    private static final String DELETE_PROVINCE_SQL = "delete from cities where id = ?;";
-    private static final String UPDATE_PROVINCES_SQL = "update cities set country_name=?, total_cases=?,active_cases=?, total_recovered=?, total_death=? where id = ?;";
-    private static final String DELETE_ALL_PROVINCES = "DELETE FROM cities;";
-    private static final String RESET_PROVINCE_ID = "ALTER TABLE cities AUTO_INCREMENT = 1;";
+    private static final String DELETE_PROVINCE_SQL = "delete from city where id = ?;";
+    private static final String UPDATE_PROVINCES_SQL = "update city set country_name=?, total_cases=?,active_cases=?, total_recovered=?, total_death=? where id = ?;";
+    private static final String DELETE_ALL_PROVINCES = "DELETE FROM city;";
+    private static final String RESET_PROVINCE_ID = "ALTER TABLE city AUTO_INCREMENT = 1;";
 
-    private static final String SELECT_TOTAL = "SELECT id,country_name, total_cases, active_cases, total_recovered, total_death FROM cities WHERE country_name = \"Vietnam\"";
-    private static final String SELECT_ALL_PROVINCE = "select * from cities;";
+    private static final String SELECT_TOTAL = "SELECT id,country_name, total_cases, active_cases, total_recovered, total_death FROM city WHERE country_name = \"Vietnam\"";
+    private static final String SELECT_ALL_PROVINCE = "select * from city;";
 
-    private static final String SELECT_PROVINCE_BY_ID = "select id,country_name, total_cases, active_cases,total_recovered, total_death from cities where id =?";
+    private static final String SELECT_PROVINCE_BY_ID = "select id,country_name, total_cases, active_cases,total_recovered, total_death from city where id =?";
 
     public VietnamDAO() throws SQLException {
     }
@@ -55,20 +56,33 @@ public class VietnamDAO implements AutoCloseable {
                 int b = 0;
                 for (int j = 0; j < rowItems.size(); j++) {
                     b += 1;
-                    String temp = rowItems.get(j).text();
+                    String temp = "";
+                    int temp2 = 0;
+                    if (rowItems.get(j).text().equals(temp)) {
+                        temp2 = 0;
+                    } else {
+                        temp = rowItems.get(j).text();
+                        if(containsDigit(temp)){
+                            temp = temp.replaceAll("[^a-zA-Z0-9]", "");
+                            temp2 = Integer.parseInt(temp);
+                        }else {
+                            temp = temp;
+                        }
+                    }
+//                    String temp = rowItems.get(j).text();
                     if (b == 6) {
                         j = j + 3;
                         b = 1;
                     } else if (b == 1) {
                         statement.setString(1, temp);
                     } else if (b == 2) {
-                        statement.setString(2, temp);
+                        statement.setInt(2, temp2);
                     } else if (b == 3) {
-                        statement.setString(3, temp);
+                        statement.setInt(3, temp2);
                     } else if (b == 4) {
-                        statement.setString(4, temp);
+                        statement.setInt(4, temp2);
                     } else if (b == 5) {
-                        statement.setString(5, temp);
+                        statement.setInt(5, temp2);
                         b = 0;
                         System.out.println(statement);
                         rowAutoUpdated = statement.executeUpdate() > 0;
@@ -80,6 +94,21 @@ public class VietnamDAO implements AutoCloseable {
         }
         return rowAutoUpdated;
     }
+    public static final boolean containsDigit(String s) {
+        boolean containsDigit = false;
+
+        if (s != null && !s.isEmpty()) {
+            for (char c : s.toCharArray()) {
+                if (containsDigit = Character.isDigit(c)) {
+                    break;
+                }
+            }
+        }
+
+        return containsDigit;
+    }
+
+
 
     public Vietnam selectProvince(int id) {
         Vietnam vietnam = null;
@@ -91,10 +120,10 @@ public class VietnamDAO implements AutoCloseable {
 
             while (rs.next()) {
                 String country_name = rs.getString("country_name");
-                String total_cases = rs.getString("total_cases");
-                String active_cases = rs.getString("active_cases");
-                String total_recovered = rs.getString("total_recovered");
-                String total_death = rs.getString("total_death");
+                int total_cases = rs.getInt("total_cases");
+                int active_cases = rs.getInt("active_cases");
+                int total_recovered = rs.getInt("total_recovered");
+                int total_death = rs.getInt("total_death");
 
                 vietnam = new Vietnam(id, country_name, total_cases,active_cases, total_recovered,total_death);
             }
@@ -110,6 +139,7 @@ public class VietnamDAO implements AutoCloseable {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_ALL_PROVINCES);) {
             rowAllDeleted = statement.executeUpdate() > 0;
+            System.out.println(statement);
         }
         return rowAllDeleted;
     }
@@ -124,10 +154,10 @@ public class VietnamDAO implements AutoCloseable {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String country_name = rs.getString("country_name");
-                String total_cases = rs.getString("total_cases");
-                String active_cases = rs.getString("active_cases");
-                String total_recovered = rs.getString("total_recovered");
-                String total_death = rs.getString("total_death");
+                int total_cases = rs.getInt("total_cases");
+                int active_cases = rs.getInt("active_cases");
+                int total_recovered = rs.getInt("total_recovered");
+                int total_death = rs.getInt("total_death");
 
                 total.add(new Vietnam(id, country_name, total_cases,active_cases,  total_recovered, total_death));
             }
@@ -147,10 +177,10 @@ public class VietnamDAO implements AutoCloseable {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String country_name = rs.getString("country_name");
-                String total_cases = rs.getString("total_cases");
-                String active_cases = rs.getString("active_cases");
-                String total_recovered = rs.getString("total_recovered");
-                String total_death = rs.getString("total_death");
+                int total_cases = rs.getInt("total_cases");
+                int active_cases = rs.getInt("active_cases");
+                int total_recovered = rs.getInt("total_recovered");
+                int total_death = rs.getInt("total_death");
                 provinces.add(new Vietnam(id, country_name,total_cases, active_cases,total_recovered,total_death));
             }
         } catch (SQLException e) {
@@ -177,6 +207,7 @@ public class VietnamDAO implements AutoCloseable {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(RESET_PROVINCE_ID);) {
             tableReserted = statement.executeUpdate() > 0;
+            System.out.println(statement);
         }
         return tableReserted;
     }
@@ -184,7 +215,7 @@ public class VietnamDAO implements AutoCloseable {
 
     public boolean insertProvince(Vietnam province) throws SQLException {
         boolean a = false;
-        String sql = "SELECT * FROM cities WHERE country_name = ?";
+        String sql = "SELECT * FROM city WHERE country_name = ?";
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, province.getCountry_name());
@@ -198,10 +229,10 @@ public class VietnamDAO implements AutoCloseable {
                     try (PreparedStatement insert = connection.prepareStatement(
                             INSERT_PROVINCE_SQL)) {
                         insert.setString(1, province.getCountry_name());
-                        insert.setString(2, province.getTotal_cases());
-                        insert.setString(3, province.getActive_cases());
-                        insert.setString(4, province.getTotal_recovered());
-                        insert.setString(5, province.getTotal_death());
+                        insert.setInt(2, province.getTotal_cases());
+                        insert.setInt(3, province.getActive_cases());
+                        insert.setInt(4, province.getTotal_recovered());
+                        insert.setInt(5, province.getTotal_death());
 
                         System.out.println(insert);
                         insert.executeUpdate();
@@ -219,16 +250,17 @@ public class VietnamDAO implements AutoCloseable {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_PROVINCES_SQL);) {
             statement.setString(1, province.getCountry_name());
-            statement.setString(2, province.getTotal_cases());
-            statement.setString(3, province.getActive_cases());
-            statement.setString(4, province.getTotal_recovered());
-            statement.setString(5, province.getTotal_death());
+            statement.setInt(2, province.getTotal_cases());
+            statement.setInt(3, province.getActive_cases());
+            statement.setInt(4, province.getTotal_recovered());
+            statement.setInt(5, province.getTotal_death());
             statement.setInt(6, province.getId());
 
             rowUpdated = statement.executeUpdate() > 0;
         }
         return rowUpdated;
     }
+
     @Override
     public void close() throws Exception {
 

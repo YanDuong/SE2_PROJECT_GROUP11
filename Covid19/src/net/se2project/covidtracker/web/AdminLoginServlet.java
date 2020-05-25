@@ -1,11 +1,9 @@
 package net.se2project.covidtracker.web;
 
  
-import java.awt.datatransfer.SystemFlavorMap;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.*;
@@ -14,7 +12,6 @@ import javax.servlet.http.*;
 
 import net.se2project.covidtracker.dao.UserDAO;
 import net.se2project.covidtracker.model.Admin;
-import net.se2project.covidtracker.model.Country;
 
 @WebServlet("/login")
 public class AdminLoginServlet extends HttpServlet {
@@ -28,6 +25,9 @@ public class AdminLoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String name = request.getParameter("name");
+        String destPage = "error.jsp";
+
 
         Map<String, String> errors = new HashMap<String, String>();
 
@@ -35,12 +35,12 @@ public class AdminLoginServlet extends HttpServlet {
 
         try {
             Admin admin = userDao.checkLogin(email, password);
-            String destPage = "/login.jsp";
+            destPage = "login.jsp";
 
             if (admin != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("admin", admin);
-                destPage = "/ShowAllCountryServlet";
+                destPage = "ShowAllCountryServlet";
             } else {
                 errors.put("passwordError", "Invalid");
                 String message = "Invalid email/password";

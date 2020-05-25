@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.List;
 
 @WebServlet(name = "ShowAllCountryServlet", urlPatterns = "/ShowAllCountryServlet")
@@ -26,15 +24,12 @@ public class ShowAllCountryServlet extends HttpServlet {
         try (CountryDAO countryDAO = new CountryDAO()) {
             List<Country> listCountry = countryDAO.selectAllCountries();
             request.setAttribute("listCountry", listCountry);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("admin-view.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("view-world.jsp");
             dispatcher.forward(request, response);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
     }
 
 }

@@ -1,4 +1,14 @@
 /*@import 'https://fonts.googleapis.com/css?family=Montserrat|Open+Sans';*/
+
+.dropdown {
+    margin: 20px;
+}
+
+.dropdown-menu {
+    max-height: 20rem;
+    overflow-y: auto;
+}
+
 .navbar-brand {
     font-family: 'Montserrat', sans-serif;
     text-transform: uppercase;

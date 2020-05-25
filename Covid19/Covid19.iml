@@ -24,5 +24,6 @@
     <orderEntry type="library" name="javax.servlet:jstl:1.2" level="project" />
     <orderEntry type="library" name="HikariCP-3.0.0" level="project" />
     <orderEntry type="library" name="jsoup-1.13.1" level="project" />
+    <orderEntry type="library" name="all" level="application" />
   </component>
 </module>
