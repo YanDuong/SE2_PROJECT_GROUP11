@@ -33,22 +33,23 @@ import static connect.DBConnect.getConnection;
  */
 public class CountryDAO implements AutoCloseable {
 
-    private static final String INSERT_COUNTRY_SQL = "INSERT INTO countries" + "  (country_name, total_cases," +
+    private static final String INSERT_COUNTRY_SQL = "INSERT INTO country" + "  (country_name, total_cases," +
             " new_cases, total_death,new_death,total_recovered,active_cases,critical_cases) VALUES "
             + " (?, ?, ?, ?, ?, ?, ?, ?);";
 
 
-    private static final String SELECT_COUNTRY_BY_ID = "select id,country_name, total_cases, new_cases, total_death,new_death,total_recovered,active_cases,critical_cases from countries where id =?";
-    private static final String SELECT_ALL_COUNTRIES = "select * from countries;";
-    private static final String DELETE_COUNTRIES_SQL = "delete from countries where id = ?;";
-    private static final String UPDATE_COUNTRIES_SQL = "update countries set country_name=?, total_cases=?,new_cases=?, total_death=?,new_death=?,total_recovered=?,active_cases=?,critical_cases=? where id = ?;";
-    private static final String DELETE_ALL_COUNTRIES = "DELETE FROM countries;";
-    private static final String RESET_COUNTRIES_ID = "ALTER TABLE countries AUTO_INCREMENT = 1;";
-    private static final String SELECT_TOTAL = "SELECT id,country_name, total_cases, new_cases, total_death,new_death,total_recovered,active_cases,critical_cases FROM countries WHERE country_name = \"World\"";
+    private static final String SELECT_COUNTRY_BY_ID = "select id,country_name, total_cases, new_cases, total_death,new_death,total_recovered,active_cases,critical_cases from country where id =?";
+    private static final String SELECT_ALL_COUNTRIES = "select * from country;";
+    private static final String DELETE_COUNTRIES_SQL = "delete from country where id = ?;";
+    private static final String UPDATE_COUNTRIES_SQL = "update country set country_name=?, total_cases=?,new_cases=?, total_death=?,new_death=?,total_recovered=?,active_cases=?,critical_cases=? where id = ?;";
+    private static final String DELETE_ALL_COUNTRIES = "DELETE FROM country;";
+    private static final String RESET_COUNTRIES_ID = "ALTER TABLE country AUTO_INCREMENT = 1;";
+    private static final String SELECT_TOTAL = "SELECT id,country_name, total_cases, new_cases, total_death,new_death,total_recovered,active_cases,critical_cases FROM country WHERE country_name = \"World\"";
+    private static final String SELECT_TOTAL_VIETNAM = "SELECT id,country_name, total_cases, new_cases, total_death,new_death,total_recovered,active_cases,critical_cases FROM country WHERE country_name = \"Vietnam\"";
 
-    private static final String INSERT_PROVINCE_SQL = "INSERT INTO cities (country_name, total_cases,active_cases, total_recovered, total_death) VALUES (?, ?, ?, ?, ?);";
+    private static final String INSERT_PROVINCE_SQL = "INSERT INTO city (country_name, total_cases,active_cases, total_recovered, total_death) VALUES (?, ?, ?, ?, ?);";
 
-    private static final String SELECT_ALL_PROVINCE = "select * from cities;";
+    private static final String SELECT_ALL_PROVINCE = "select * from city;";
 
     public CountryDAO() throws SQLException {
     }
@@ -59,7 +60,6 @@ public class CountryDAO implements AutoCloseable {
         deleteAllCountry();
         resetCountriesId();
         timeUpdate();
-        autoUpdateVietnam();
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_COUNTRY_SQL)) {
@@ -77,30 +77,44 @@ public class CountryDAO implements AutoCloseable {
                 for (int j = 0; j < rowItems.size(); j++) {
                     b += 1;
                     String temp = "";
+                    int temp2 = 0;
                     if (rowItems.get(j).text().equals(temp)) {
-                        temp = "";
+                        temp2 = 0;
                     } else {
                         temp = rowItems.get(j).text();
+                        if(containsDigit(temp)){
+                            temp = temp.replaceAll("[^a-zA-Z0-9]", "");
+                            temp2 = Integer.parseInt(temp);
+                        }else {
+                            temp = temp;
+                        }
                     }
-                    if (b == 9) {
+                    if (b == 10) {
                         j = j + 3;
                         b = 1;
                     } else if (b == 1) {
-                        statement.setString(1, temp);
+
                     } else if (b == 2) {
-                        statement.setString(2, temp);
+                        if(temp.equals("Total:") || temp.equals("North America") || temp.equals("Europe") ||
+                                temp.equals("South America") || temp.equals("Asia") || temp.equals("Africa") ||
+                                temp.equals("Oceania") ||temp.equals("")){
+                            break;
+                        }
+                        statement.setString(1, temp);
                     } else if (b == 3) {
-                        statement.setString(3, temp);
+                        statement.setInt(2, temp2);
                     } else if (b == 4) {
-                        statement.setString(4, temp);
+                        statement.setInt(3, temp2);
                     } else if (b == 5) {
-                        statement.setString(5, temp);
+                        statement.setInt(4, temp2);
                     } else if (b == 6) {
-                        statement.setString(6, temp);
+                        statement.setInt(5, temp2);
                     } else if (b == 7) {
-                        statement.setString(7, temp);
+                        statement.setInt(6, temp2);
                     } else if (b == 8) {
-                        statement.setString(8, temp);
+                        statement.setInt(7, temp2);
+                    } else if (b == 9) {
+                        statement.setInt(8, temp2);
                         System.out.println(statement);
                         rowAutoUpdated = statement.executeUpdate() > 0;
                     } else {
@@ -113,6 +127,21 @@ public class CountryDAO implements AutoCloseable {
     }
 
     //vietnam
+    public static boolean containsDigit(String s) {
+        boolean containsDigit = false;
+
+        if (s != null && !s.isEmpty()) {
+            for (char c : s.toCharArray()) {
+                if (containsDigit = Character.isDigit(c)) {
+                    break;
+                }
+            }
+        }
+
+        return containsDigit;
+    }
+
+
 
     public List<Vietnam> selectAllProvince() {
         List<Vietnam> provinces = new ArrayList<>();
@@ -123,10 +152,10 @@ public class CountryDAO implements AutoCloseable {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String province_name = rs.getString("country_name");
-                String total_cases = rs.getString("total_cases");
-                String active_cases = rs.getString("active_cases");
-                String total_death = rs.getString("total_death");
-                String total_recovered = rs.getString("total_recovered");
+                int total_cases = rs.getInt("total_cases");
+                int active_cases = rs.getInt("active_cases");
+                int total_death = rs.getInt("total_death");
+                int total_recovered = rs.getInt("total_recovered");
                 provinces.add(new Vietnam(id, province_name, total_cases, active_cases, total_death, total_recovered));
             }
         } catch (SQLException e) {
@@ -216,28 +245,7 @@ public class CountryDAO implements AutoCloseable {
         String timeUpdate = dtf.format(now);
         return timeUpdate;
     }
-/*
-    public void insertCountry(Country country) throws SQLException {
-        System.out.println(INSERT_COUNTRY_SQL);
-        // try-with-resource statement will auto close the connection.
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_COUNTRY_SQL)) {
-            preparedStatement.setString(1, country.getCountry_name());
-            preparedStatement.setString(2, country.getTotal_cases());
-            preparedStatement.setString(3, country.getNew_cases());
-            preparedStatement.setString(4, country.getTotal_death());
-            preparedStatement.setString(5, country.getNew_death());
-            preparedStatement.setString(6, country.getTotal_recovered());
-            preparedStatement.setString(7, country.getActive_cases());
-            preparedStatement.setString(8, country.getCritical_cases());
 
-            System.out.println(preparedStatement);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            printSQLException(e);
-        }
-    }
-*/
     public Country selectCountry(int id) {
         Country country = null;
         try (Connection connection = getConnection();
@@ -248,13 +256,13 @@ public class CountryDAO implements AutoCloseable {
 
             while (rs.next()) {
                 String country_name = rs.getString("country_name");
-                String total_cases = rs.getString("total_cases");
-                String new_cases = rs.getString("new_cases");
-                String total_death = rs.getString("total_death");
-                String new_death = rs.getString("new_death");
-                String total_recovered = rs.getString("total_recovered");
-                String active_cases = rs.getString("active_cases");
-                String critical_cases = rs.getString("critical_cases");
+                int total_cases = rs.getInt("total_cases");
+                int new_cases = rs.getInt("new_cases");
+                int total_death = rs.getInt("total_death");
+                int new_death = rs.getInt("new_death");
+                int total_recovered = rs.getInt("total_recovered");
+                int active_cases = rs.getInt("active_cases");
+                int critical_cases = rs.getInt("critical_cases");
 
                 country = new Country(id, country_name, total_cases, new_cases, total_death, new_death, total_recovered, active_cases, critical_cases);
             }
@@ -276,13 +284,40 @@ public class CountryDAO implements AutoCloseable {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String country_name = rs.getString("country_name");
-                String total_cases = rs.getString("total_cases");
-                String new_cases = rs.getString("new_cases");
-                String total_death = rs.getString("total_death");
-                String new_death = rs.getString("new_death");
-                String total_recovered = rs.getString("total_recovered");
-                String active_cases = rs.getString("active_cases");
-                String critical_cases = rs.getString("critical_cases");
+                int total_cases = rs.getInt("total_cases");
+                int new_cases = rs.getInt("new_cases");
+                int total_death = rs.getInt("total_death");
+                int new_death = rs.getInt("new_death");
+                int total_recovered = rs.getInt("total_recovered");
+                int active_cases = rs.getInt("active_cases");
+                int critical_cases = rs.getInt("critical_cases");
+                total.add(new Country(id, country_name, total_cases, new_cases, total_death, new_death, total_recovered, active_cases, critical_cases));
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return total;
+    }
+
+
+    public List<Country> listTotalProvince() {
+
+        List<Country> total = new ArrayList<>();
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOTAL_VIETNAM);) {
+            System.out.println(preparedStatement);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String country_name = rs.getString("country_name");
+                int total_cases = rs.getInt("total_cases");
+                int new_cases = rs.getInt("new_cases");
+                int total_death = rs.getInt("total_death");
+                int new_death = rs.getInt("new_death");
+                int total_recovered = rs.getInt("total_recovered");
+                int active_cases = rs.getInt("active_cases");
+                int critical_cases = rs.getInt("critical_cases");
                 total.add(new Country(id, country_name, total_cases, new_cases, total_death, new_death, total_recovered, active_cases, critical_cases));
             }
         } catch (SQLException e) {
@@ -301,13 +336,13 @@ public class CountryDAO implements AutoCloseable {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String country_name = rs.getString("country_name");
-                String total_cases = rs.getString("total_cases");
-                String new_cases = rs.getString("new_cases");
-                String total_death = rs.getString("total_death");
-                String new_death = rs.getString("new_death");
-                String total_recovered = rs.getString("total_recovered");
-                String active_cases = rs.getString("active_cases");
-                String critical_cases = rs.getString("critical_cases");
+                int total_cases = rs.getInt("total_cases");
+                int new_cases = rs.getInt("new_cases");
+                int total_death = rs.getInt("total_death");
+                int new_death = rs.getInt("new_death");
+                int total_recovered = rs.getInt("total_recovered");
+                int active_cases = rs.getInt("active_cases");
+                int critical_cases = rs.getInt("critical_cases");
                 countries.add(new Country(id, country_name, total_cases, new_cases, total_death, new_death, total_recovered, active_cases, critical_cases));
             }
         } catch (SQLException e) {
@@ -315,6 +350,7 @@ public class CountryDAO implements AutoCloseable {
         }
         return countries;
     }
+
 
     public boolean deleteCountry(int id) throws SQLException {
         boolean rowDeleted;
@@ -351,14 +387,16 @@ public class CountryDAO implements AutoCloseable {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_COUNTRIES_SQL);) {
             statement.setString(1, country.getCountry_name());
-            statement.setString(2, country.getTotal_cases());
-            statement.setString(3, country.getNew_cases());
-            statement.setString(4, country.getTotal_death());
-            statement.setString(5, country.getNew_death());
-            statement.setString(6, country.getTotal_recovered());
-            statement.setString(7, country.getActive_cases());
-            statement.setString(8, country.getCritical_cases());
+            statement.setInt(2, country.getTotal_cases());
+            statement.setInt(3, country.getNew_cases());
+            statement.setInt(4, country.getTotal_death());
+            statement.setInt(5, country.getNew_death());
+            statement.setInt(6, country.getTotal_recovered());
+            statement.setInt(7, country.getActive_cases());
+            statement.setInt(8, country.getCritical_cases());
             statement.setInt(9, country.getId());
+
+            System.out.println(statement);
 
             rowUpdated = statement.executeUpdate() > 0;
         }
@@ -397,13 +435,13 @@ public class CountryDAO implements AutoCloseable {
             while (rs.next()) {
 
                 ps.setString(1, artc.getCountry_name());
-                ps.setString(2, artc.getTotal_cases());
-                ps.setString(3, artc.getNew_cases());
-                ps.setString(4, artc.getTotal_death());
-                ps.setString(5, artc.getNew_death());
-                ps.setString(6, artc.getTotal_recovered());
-                ps.setString(7, artc.getActive_cases());
-                ps.setString(8, artc.getCritical_cases());
+                ps.setInt(2, artc.getTotal_cases());
+                ps.setInt(3, artc.getNew_cases());
+                ps.setInt(4, artc.getTotal_death());
+                ps.setInt(5, artc.getNew_death());
+                ps.setInt(6, artc.getTotal_recovered());
+                ps.setInt(7, artc.getActive_cases());
+                ps.setInt(8, artc.getCritical_cases());
             }
             return artc;
 
@@ -422,7 +460,7 @@ public class CountryDAO implements AutoCloseable {
 
     public boolean insertCountry(Country country) throws SQLException {
         boolean a = false;
-        String sql = "SELECT * FROM countries WHERE country_name = ?";
+        String sql = "SELECT * FROM country WHERE country_name = ?";
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, country.getCountry_name());
@@ -437,13 +475,13 @@ public class CountryDAO implements AutoCloseable {
                     try (PreparedStatement insert = connection.prepareStatement(
                             INSERT_COUNTRY_SQL)) {
                         insert.setString(1, country.getCountry_name());
-                        insert.setString(2, country.getTotal_cases());
-                        insert.setString(3, country.getNew_cases());
-                        insert.setString(4, country.getTotal_death());
-                        insert.setString(5, country.getNew_death());
-                        insert.setString(6, country.getTotal_recovered());
-                        insert.setString(7, country.getActive_cases());
-                        insert.setString(8, country.getCritical_cases());
+                        insert.setInt(2, country.getTotal_cases());
+                        insert.setInt(3, country.getNew_cases());
+                        insert.setInt(4, country.getTotal_death());
+                        insert.setInt(5, country.getNew_death());
+                        insert.setInt(6, country.getTotal_recovered());
+                        insert.setInt(7, country.getActive_cases());
+                        insert.setInt(8, country.getCritical_cases());
 
                         System.out.println(insert);
                         insert.executeUpdate();

@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 
 @WebServlet(name = "DeleteCountryServlet", urlPatterns = "/DeleteCountryServlet")
 public class DeleteCountryServlet extends HttpServlet {
@@ -22,14 +20,10 @@ public class DeleteCountryServlet extends HttpServlet {
         try (CountryDAO countryDAO = new CountryDAO()) {
             int id = Integer.parseInt(request.getParameter("id"));
             countryDAO.deleteCountry(id);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        response.sendRedirect("/ShowAllCountryServlet");
+        response.sendRedirect("ShowAllCountryServlet");
     }
 
 

@@ -1,8 +1,6 @@
 package net.se2project.covidtracker.VietnamServlet;
 
-import com.sun.tools.attach.VirtualMachine;
 import net.se2project.covidtracker.dao.VietnamDAO;
-import net.se2project.covidtracker.model.Country;
 import net.se2project.covidtracker.model.Vietnam;
 
 import javax.servlet.RequestDispatcher;
@@ -12,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 
 @WebServlet(name = "EditProvinceServlet", urlPatterns = "/EditProvinceServlet")
 public class EditProvinceServlet extends HttpServlet {
@@ -27,15 +23,11 @@ public class EditProvinceServlet extends HttpServlet {
         try (VietnamDAO vietnamDAO = new VietnamDAO()) {
             int id = Integer.parseInt(request.getParameter("id"));
             Vietnam existingProvince = vietnamDAO.selectProvince(id);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("province-form.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("form-city.jsp");
             request.setAttribute("province", existingProvince);
             dispatcher.forward(request, response);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

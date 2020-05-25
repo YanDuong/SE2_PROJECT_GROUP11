@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 
 @WebServlet(name = "EditCountryServlet", urlPatterns = "/EditCountryServlet")
 public class EditCountryServlet extends HttpServlet {
@@ -25,15 +23,11 @@ public class EditCountryServlet extends HttpServlet {
         try (CountryDAO countryDAO = new CountryDAO()) {
             int id = Integer.parseInt(request.getParameter("id"));
             Country existingCountry = countryDAO.selectCountry(id);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("country-form.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("form-country.jsp");
             request.setAttribute("country", existingCountry);
             dispatcher.forward(request, response);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

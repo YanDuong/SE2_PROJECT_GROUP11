@@ -1,14 +1,7 @@
 package net.se2project.covidtracker.web;
 
-
 import java.io.IOException;
- 
-import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
-
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +21,7 @@ public class AdminLogoutServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.removeAttribute("admin");
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/ShowAllCountryUserViewServlet");
-            dispatcher.forward(request, response);
+            response.sendRedirect("ShowAllCountryServlet");
         }
     }
     public void doPost(HttpServletRequest request, HttpServletResponse response)
