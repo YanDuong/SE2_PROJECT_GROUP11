@@ -1,7 +1,8 @@
 package net.se2project.covidtracker.NewsServlet;
 
-import net.se2project.covidtracker.dao.NewsDao;
+
 import net.se2project.covidtracker.model.News;
+import service.NewsService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,8 +21,8 @@ public class GetAllNewsServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (NewsDao newsDao = new NewsDao()) {
-            List<News> listNews = newsDao.selectAllNews();
+        try (NewsService service = new NewsService()) {
+            List<News> listNews = service.selectAllNews();
             request.setAttribute("listNews", listNews);
         } catch (Exception throwables) {
             throwables.printStackTrace();

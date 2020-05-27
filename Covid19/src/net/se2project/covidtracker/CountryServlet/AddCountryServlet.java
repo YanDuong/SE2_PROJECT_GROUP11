@@ -1,7 +1,7 @@
 package net.se2project.covidtracker.CountryServlet;
 
-import net.se2project.covidtracker.dao.CountryDAO;
 import net.se2project.covidtracker.model.Country;
+import service.CountryService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,7 +19,7 @@ public class AddCountryServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (CountryDAO countryDAO = new CountryDAO()) {
+        try (CountryService service = new CountryService()) {
             String country_name = request.getParameter("country_name");
             int total_cases = Integer.parseInt(request.getParameter("total_cases"));
             int new_cases = Integer.parseInt(request.getParameter("new_cases"));
@@ -29,7 +29,7 @@ public class AddCountryServlet extends HttpServlet {
             int active_cases =Integer.parseInt(request.getParameter("active_cases"));
             int critical_cases =Integer.parseInt(request.getParameter("critical_cases"));
             Country newCountry = new Country(country_name, total_cases,new_cases, total_death,new_death,total_recovered,active_cases,critical_cases);
-            countryDAO.insertCountry(newCountry);
+            service.insertCountry(newCountry);
 
         } catch (Exception throwables) {
             throwables.printStackTrace();

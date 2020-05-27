@@ -1,7 +1,8 @@
 package net.se2project.covidtracker.ContinentServlet;
 
-import net.se2project.covidtracker.dao.ContinentDao;
+
 import net.se2project.covidtracker.model.Continent;
+import service.ContinentService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+
 
 @WebServlet(name = "GetAllContinentServlet", urlPatterns = "/GetAllContinentServlet")
 public class GetAllContinentServlet extends HttpServlet {
@@ -20,8 +22,8 @@ public class GetAllContinentServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (ContinentDao ContinentDao = new ContinentDao()) {
-            List<Continent> listContinent = ContinentDao.selectAllContinent();
+        try (ContinentService service = new ContinentService()) {
+            List<Continent> listContinent = service.selectAllContinent();
             request.setAttribute("listCountry", listContinent);
         } catch (Exception throwables) {
             throwables.printStackTrace();

@@ -9,18 +9,15 @@ import java.text.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import connect.DBConnection;
+import daoi.ChartDAOI;
 import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-//Scraping Data
 import net.se2project.covidtracker.model.Chart;
 
-
-import static connect.DBConnect.getConnection;
-
-public class ChartDao implements AutoCloseable {
+public class ChartDao implements AutoCloseable, ChartDAOI {
 
     private static final String INSERT_VIETNAM_CASES_SQL = "INSERT INTO dailycase (name, date, year, cases) VALUES (?, ?, ?, ?);";
     private static final String DELETE_ALL_PROVINCES = "DELETE FROM dailycase;";
@@ -28,15 +25,16 @@ public class ChartDao implements AutoCloseable {
     private static final String SELECT_ALL_VIETNAM_CHART = "SELECT id,name, date, year, cases from dailycase WHERE name=\"Vietnam\"";
     private static final String SELECT_ALL_WORLD_CHART = "SELECT id,name, date, year, cases from dailycase WHERE name=\"World\"";
 
-
     public ChartDao() {
     }
 
+    @Override
     public void autoUpdateChart() throws SQLException, IOException, NumberFormatException, ParseException {
         deleteAllChart();
         resetChartId();
 
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_VIETNAM_CASES_SQL)) {
             try {
             // CSV file delimiter
@@ -108,17 +106,21 @@ public class ChartDao implements AutoCloseable {
         return containsCharacter;
     }
 
-
+    @Override
     public void deleteAllChart() throws SQLException {
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_ALL_PROVINCES);) {
             statement.executeUpdate();
             System.out.println(statement);
         }
     }
+    
+    @Override
     public List<Chart> selectAllChart() {
         List<Chart> charts = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_VIETNAM_CHART);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -136,17 +138,21 @@ public class ChartDao implements AutoCloseable {
         }
         return charts;
     }
-
+    @Override
     public void resetChartId() throws SQLException {
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(RESET_PROVINCE_ID);) {
             statement.executeUpdate();
             System.out.println(statement);
         }
     }
+    
+    @Override
     public List<Chart> selectAllWorldChart() {
         List<Chart> vietnamCharts = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_WORLD_CHART);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -164,7 +170,6 @@ public class ChartDao implements AutoCloseable {
         }
         return vietnamCharts;
     }
-
 
     @Override
     public void close() {

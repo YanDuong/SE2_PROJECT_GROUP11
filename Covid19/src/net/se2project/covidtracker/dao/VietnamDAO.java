@@ -10,16 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Scraping Data
-import net.se2project.covidtracker.model.Country;
+
 import net.se2project.covidtracker.model.Vietnam;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import static connect.DBConnect.getConnection;
+import connect.DBConnection;
+import daoi.VietnamDAOI;
 
-public class VietnamDAO implements AutoCloseable {
+
+public class VietnamDAO implements AutoCloseable, VietnamDAOI {
 
     private static final String INSERT_PROVINCE_SQL = "INSERT INTO city (country_name, total_cases,active_cases, total_recovered, total_death) VALUES (?, ?, ?, ?, ?);";
 
@@ -33,16 +35,18 @@ public class VietnamDAO implements AutoCloseable {
 
     private static final String SELECT_PROVINCE_BY_ID = "select id,country_name, total_cases, active_cases,total_recovered, total_death from city where id =?";
 
-    public VietnamDAO() throws SQLException {
+    public VietnamDAO() throws SQLException{
     }
 
+    @Override
     public boolean autoUpdateVietnam() throws SQLException, IOException, NumberFormatException, ParseException {
         boolean rowAutoUpdated = false;
 
         deleteAllProvince();
         resetProvincesId();
 
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_PROVINCE_SQL)) {
             String url = "https://vi.wikipedia.org/wiki/%C4%90%E1%BA%A1i_d%E1%BB%8Bch_COVID-19_t%E1%BA%A1i_Vi%E1%BB%87t_Nam";
             Document doc = Jsoup.connect(url).get();
@@ -69,7 +73,6 @@ public class VietnamDAO implements AutoCloseable {
                             temp = temp;
                         }
                     }
-//                    String temp = rowItems.get(j).text();
                     if (b == 6) {
                         j = j + 3;
                         b = 1;
@@ -94,6 +97,8 @@ public class VietnamDAO implements AutoCloseable {
         }
         return rowAutoUpdated;
     }
+
+
     public static final boolean containsDigit(String s) {
         boolean containsDigit = false;
 
@@ -108,11 +113,11 @@ public class VietnamDAO implements AutoCloseable {
         return containsDigit;
     }
 
-
-
+    @Override
     public Vietnam selectProvince(int id) {
         Vietnam vietnam = null;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PROVINCE_BY_ID);) {
             preparedStatement.setInt(1, id);
             System.out.println(preparedStatement);
@@ -133,10 +138,11 @@ public class VietnamDAO implements AutoCloseable {
         return vietnam;
     }
 
-
+    @Override
     public boolean deleteAllProvince() throws SQLException {
         boolean rowAllDeleted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_ALL_PROVINCES);) {
             rowAllDeleted = statement.executeUpdate() > 0;
             System.out.println(statement);
@@ -144,10 +150,10 @@ public class VietnamDAO implements AutoCloseable {
         return rowAllDeleted;
     }
 
-
     public List<Vietnam> listProvinceTotal() {
         List<Vietnam> total = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOTAL);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -167,10 +173,10 @@ public class VietnamDAO implements AutoCloseable {
         return total;
     }
 
-
     public List<Vietnam> selectAllProvince() {
         List<Vietnam> provinces = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_PROVINCE);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -189,10 +195,10 @@ public class VietnamDAO implements AutoCloseable {
         return provinces;
     }
 
-
     public boolean deleteProvince(int id) throws SQLException {
         boolean rowDeleted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_PROVINCE_SQL);) {
             statement.setInt(1, id);
             rowDeleted = statement.executeUpdate() > 0;
@@ -204,7 +210,8 @@ public class VietnamDAO implements AutoCloseable {
 
     public boolean resetProvincesId() throws SQLException {
         boolean tableReserted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(RESET_PROVINCE_ID);) {
             tableReserted = statement.executeUpdate() > 0;
             System.out.println(statement);
@@ -212,27 +219,28 @@ public class VietnamDAO implements AutoCloseable {
         return tableReserted;
     }
 
-
-    public boolean insertProvince(Vietnam province) throws SQLException {
+    @Override
+    public boolean insertProvince(Vietnam v) throws SQLException {
         boolean a = false;
         String sql = "SELECT * FROM city WHERE country_name = ?";
-        Connection connection = getConnection();
+        DBConnection dbhelper = DBConnection.getDBHelper();
+		Connection connection = dbhelper.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, province.getCountry_name());
+        preparedStatement.setString(1, v.getCountry_name());
 
         try (PreparedStatement checkAccountExists = connection.prepareStatement(sql)) {
-            checkAccountExists.setString(1, province.getCountry_name());
+            checkAccountExists.setString(1, v.getCountry_name());
             try (ResultSet rs = checkAccountExists.executeQuery()) {
                 if (rs.next()) {
                     System.out.println("Account Existed");
                 } else {
                     try (PreparedStatement insert = connection.prepareStatement(
                             INSERT_PROVINCE_SQL)) {
-                        insert.setString(1, province.getCountry_name());
-                        insert.setInt(2, province.getTotal_cases());
-                        insert.setInt(3, province.getActive_cases());
-                        insert.setInt(4, province.getTotal_recovered());
-                        insert.setInt(5, province.getTotal_death());
+                        insert.setString(1, v.getCountry_name());
+                        insert.setInt(2, v.getTotal_cases());
+                        insert.setInt(3, v.getActive_cases());
+                        insert.setInt(4, v.getTotal_recovered());
+                        insert.setInt(5, v.getTotal_death());
 
                         System.out.println(insert);
                         insert.executeUpdate();
@@ -244,17 +252,18 @@ public class VietnamDAO implements AutoCloseable {
         }
         return a;
     }
-
-    public boolean updateProvince(Vietnam province) throws SQLException {
+    @Override
+    public boolean updateProvince(Vietnam v) throws SQLException {
         boolean rowUpdated;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_PROVINCES_SQL);) {
-            statement.setString(1, province.getCountry_name());
-            statement.setInt(2, province.getTotal_cases());
-            statement.setInt(3, province.getActive_cases());
-            statement.setInt(4, province.getTotal_recovered());
-            statement.setInt(5, province.getTotal_death());
-            statement.setInt(6, province.getId());
+            statement.setString(1,v.getCountry_name());
+            statement.setInt(2, v.getTotal_cases());
+            statement.setInt(3, v.getActive_cases());
+            statement.setInt(4, v.getTotal_recovered());
+            statement.setInt(5, v.getTotal_death());
+            statement.setInt(6, v.getId());
 
             rowUpdated = statement.executeUpdate() > 0;
         }
