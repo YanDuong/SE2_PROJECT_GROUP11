@@ -1,7 +1,7 @@
 package net.se2project.covidtracker.ContinentServlet;
 
-import net.se2project.covidtracker.dao.ContinentDao;
 import net.se2project.covidtracker.model.Continent;
+import service.ContinentService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,13 +14,12 @@ import java.io.IOException;
 public class UpdateContinentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         this.doGet(request,response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (ContinentDao ContinentDao = new ContinentDao()) {
+        try (ContinentService service = new ContinentService()) {
             int id = Integer.parseInt(request.getParameter("id"));
             String country_name = request.getParameter("country_name");
             int total_cases = Integer.parseInt(request.getParameter("total_cases"));
@@ -32,7 +31,7 @@ public class UpdateContinentServlet extends HttpServlet {
             int critical_cases =Integer.parseInt(request.getParameter("critical_cases"));
 
             Continent book = new Continent(id,country_name, total_cases,new_cases, total_death,new_death,total_recovered,active_cases,critical_cases);
-            ContinentDao.updateContinent(book);
+            service.updateContinent(book);
             response.sendRedirect("ShowAllContinentServlet");
         } catch (Exception throwables) {
             throwables.printStackTrace();

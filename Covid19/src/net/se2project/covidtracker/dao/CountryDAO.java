@@ -1,13 +1,15 @@
 package net.se2project.covidtracker.dao;
 
 import net.se2project.covidtracker.model.Country;
-//import net.se2project.covidtracker.dao.VietnamDAO;
-
 import net.se2project.covidtracker.model.Vietnam;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import connect.DBConnection;
+import daoi.CountryDAOI;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,9 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static connect.DBConnect.getConnection;
-
-//Scraping Data
 
 /**
  * AbstractDAO.java This DAO class provides CRUD database operations for the
@@ -31,13 +30,11 @@ import static connect.DBConnect.getConnection;
  * @author Khang
  *
  */
-public class CountryDAO implements AutoCloseable {
+public class CountryDAO implements AutoCloseable, CountryDAOI {
 
     private static final String INSERT_COUNTRY_SQL = "INSERT INTO country" + "  (country_name, total_cases," +
             " new_cases, total_death,new_death,total_recovered,active_cases,critical_cases) VALUES "
             + " (?, ?, ?, ?, ?, ?, ?, ?);";
-
-
     private static final String SELECT_COUNTRY_BY_ID = "select id,country_name, total_cases, new_cases, total_death,new_death,total_recovered,active_cases,critical_cases from country where id =?";
     private static final String SELECT_ALL_COUNTRIES = "select * from country;";
     private static final String DELETE_COUNTRIES_SQL = "delete from country where id = ?;";
@@ -54,14 +51,15 @@ public class CountryDAO implements AutoCloseable {
     public CountryDAO() throws SQLException {
     }
 
-
+@Override
     public boolean autoUpdateCountry() throws SQLException, IOException, NumberFormatException, ParseException {
         boolean rowAutoUpdated = false;
         deleteAllCountry();
         resetCountriesId();
         timeUpdate();
 
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_COUNTRY_SQL)) {
 
             String url = "https://www.worldometers.info/coronavirus/";
@@ -142,10 +140,11 @@ public class CountryDAO implements AutoCloseable {
     }
 
 
-
+    @Override
     public List<Vietnam> selectAllProvince() {
         List<Vietnam> provinces = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_PROVINCE);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -167,7 +166,8 @@ public class CountryDAO implements AutoCloseable {
 
     public boolean autoUpdateVietnam() throws SQLException, IOException, NumberFormatException, ParseException {
         boolean rowAutoUpdated = false;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_PROVINCE_SQL)) {
 
             String url = "https://vi.wikipedia.org/wiki/%C4%90%E1%BA%A1i_d%E1%BB%8Bch_COVID-19_t%E1%BA%A1i_Vi%E1%BB%87t_Nam";
@@ -213,7 +213,8 @@ public class CountryDAO implements AutoCloseable {
     public boolean autoUpdateViwetnam() throws SQLException, IOException, NumberFormatException, ParseException {
         boolean rowAutoUpdated = false;
 
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_PROVINCE_SQL)) {
 
             String url = "https://vi.wikipedia.org/wiki/%C4%90%E1%BA%A1i_d%E1%BB%8Bch_COVID-19_t%E1%BA%A1i_Vi%E1%BB%87t_Nam";
@@ -238,7 +239,7 @@ public class CountryDAO implements AutoCloseable {
         return rowAutoUpdated;
     }
 
-
+    
     public String timeUpdate() throws SQLException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
@@ -246,9 +247,12 @@ public class CountryDAO implements AutoCloseable {
         return timeUpdate;
     }
 
+
+    @Override
     public Country selectCountry(int id) {
         Country country = null;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNTRY_BY_ID);) {
             preparedStatement.setInt(1, id);
             System.out.println(preparedStatement);
@@ -273,10 +277,12 @@ public class CountryDAO implements AutoCloseable {
     }
 
 
+    @Override
     public List<Country> listTotal() {
 
         List<Country> total = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOTAL);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -300,10 +306,12 @@ public class CountryDAO implements AutoCloseable {
     }
 
 
+    @Override
     public List<Country> listTotalProvince() {
 
         List<Country> total = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOTAL_VIETNAM);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -326,9 +334,12 @@ public class CountryDAO implements AutoCloseable {
         return total;
     }
 
+
+    @Override
     public List<Country> selectAllCountries() {
         List<Country> countries = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_COUNTRIES);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -352,9 +363,11 @@ public class CountryDAO implements AutoCloseable {
     }
 
 
+    @Override
     public boolean deleteCountry(int id) throws SQLException {
         boolean rowDeleted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_COUNTRIES_SQL);) {
             statement.setInt(1, id);
             rowDeleted = statement.executeUpdate() > 0;
@@ -363,18 +376,23 @@ public class CountryDAO implements AutoCloseable {
         return rowDeleted;
     }
 
+
     public boolean deleteAllCountry() throws SQLException {
         boolean rowAllDeleted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_ALL_COUNTRIES);) {
             rowAllDeleted = statement.executeUpdate() > 0;
         }
         return rowAllDeleted;
     }
 
+
+    @Override
     public boolean resetCountriesId() throws SQLException {
         boolean tableReserted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(RESET_COUNTRIES_ID);) {
             tableReserted = statement.executeUpdate() > 0;
         }
@@ -382,9 +400,11 @@ public class CountryDAO implements AutoCloseable {
     }
 
 
+    @Override
     public boolean updateCountry(Country country) throws SQLException {
         boolean rowUpdated;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_COUNTRIES_SQL);) {
             statement.setString(1, country.getCountry_name());
             statement.setInt(2, country.getTotal_cases());
@@ -403,6 +423,7 @@ public class CountryDAO implements AutoCloseable {
         return rowUpdated;
     }
 
+
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
             if (e instanceof SQLException) {
@@ -419,16 +440,15 @@ public class CountryDAO implements AutoCloseable {
         }
     }
 
+
     public Country findTotal(int id) {
         Integer i = id;
 
-        if (i == null) {
-            return null;
-        }
-
         Country artc = new Country();
         artc.setCountry_name("Placeholder");
-        try (PreparedStatement ps = getConnection().prepareStatement(SELECT_TOTAL)) {
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
+        		PreparedStatement ps = connection.prepareStatement(SELECT_TOTAL)) {
             ps.setInt(1, i);
             ResultSet rs = ps.executeQuery();
 
@@ -452,16 +472,19 @@ public class CountryDAO implements AutoCloseable {
         return artc;
     }
 
+
     @Override
     public void close() throws Exception {
 
     }
 
 
+    @Override
     public boolean insertCountry(Country country) throws SQLException {
         boolean a = false;
         String sql = "SELECT * FROM country WHERE country_name = ?";
-        Connection connection = getConnection();
+        DBConnection dbhelper = DBConnection.getDBHelper();
+		Connection connection = dbhelper.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, country.getCountry_name());
 

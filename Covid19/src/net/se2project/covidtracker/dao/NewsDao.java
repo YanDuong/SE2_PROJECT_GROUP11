@@ -1,9 +1,13 @@
 package net.se2project.covidtracker.dao;
+
 import net.se2project.covidtracker.model.News;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import connect.DBConnection;
+import daoi.NewsDAOI;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -14,25 +18,25 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static connect.DBConnect.getConnection;
 
-public class NewsDao implements AutoCloseable {
+public class NewsDAO implements AutoCloseable, NewsDAOI {
 
     private static final String INSERT_NEWS_SQL = "INSERT INTO news (title, url, imageUrl,sourceMeta, datePublic) VALUES (?, ?, ?, ?, ?);";
     private static final String SELECT_ALL_NEWS = "select * from news;";
     private static final String DELETE_ALL_NEWS = "DELETE FROM news;";
     private static final String RESET_NEWS_ID = "ALTER TABLE news AUTO_INCREMENT = 1;";
 
-
-    public NewsDao() {
+    public NewsDAO() {
 
     }
+
     public boolean autoUpdateNews() throws SQLException, IOException, NumberFormatException, ParseException {
         boolean rowAutoUpdated = false;
         deleteAllNews();
         resetNewsId();
 
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_NEWS_SQL)) {
 
             String url = "https://baomoi.com/phong-chong-dich-covid-19/top/328.epi";
@@ -77,9 +81,11 @@ public class NewsDao implements AutoCloseable {
         }
     }
 
+
     public List<News> selectAllNews() {
         List<News> news = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_NEWS);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -101,8 +107,6 @@ public class NewsDao implements AutoCloseable {
     }
 
 
-
-
     private static void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
             if (e instanceof SQLException) {
@@ -119,23 +123,29 @@ public class NewsDao implements AutoCloseable {
         }
     }
 
+
+    @Override
     public boolean deleteAllNews() throws SQLException {
         boolean rowAllDeleted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_ALL_NEWS);) {
             rowAllDeleted = statement.executeUpdate() > 0;
         }
         return rowAllDeleted;
     }
 
+
     public boolean resetNewsId() throws SQLException {
         boolean tableReserted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(RESET_NEWS_ID);) {
             tableReserted = statement.executeUpdate() > 0;
         }
         return tableReserted;
     }
+
 
     @Override
     public void close() throws Exception {

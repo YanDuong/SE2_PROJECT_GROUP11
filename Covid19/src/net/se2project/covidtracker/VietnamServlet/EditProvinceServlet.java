@@ -1,7 +1,7 @@
 package net.se2project.covidtracker.VietnamServlet;
 
-import net.se2project.covidtracker.dao.VietnamDAO;
 import net.se2project.covidtracker.model.Vietnam;
+import service.VietnamService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,9 +20,9 @@ public class EditProvinceServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (VietnamDAO vietnamDAO = new VietnamDAO()) {
+        try (VietnamService service = new VietnamService()) {
             int id = Integer.parseInt(request.getParameter("id"));
-            Vietnam existingProvince = vietnamDAO.selectProvince(id);
+            Vietnam existingProvince = service.selectProvince(id);
             RequestDispatcher dispatcher = request.getRequestDispatcher("form-city.jsp");
             request.setAttribute("province", existingProvince);
             dispatcher.forward(request, response);

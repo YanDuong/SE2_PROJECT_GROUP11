@@ -1,7 +1,7 @@
 package net.se2project.covidtracker.ContinentServlet;
 
-import net.se2project.covidtracker.dao.ContinentDao;
 import net.se2project.covidtracker.model.Continent;
+import service.ContinentService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -21,8 +21,8 @@ public class ShowAllContinentServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (ContinentDao ContinentDao = new ContinentDao()) {
-            List<Continent> listContinent = ContinentDao.selectAllContinent();
+        try (ContinentService service = new ContinentService()) {
+            List<Continent> listContinent = service.selectAllContinent();
             request.setAttribute("listContinent", listContinent);
             RequestDispatcher dispatcher = request.getRequestDispatcher("view-continent.jsp");
             dispatcher.forward(request, response);

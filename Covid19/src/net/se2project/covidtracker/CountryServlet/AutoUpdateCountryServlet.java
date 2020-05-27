@@ -1,6 +1,6 @@
 package net.se2project.covidtracker.CountryServlet;
 
-import net.se2project.covidtracker.dao.CountryDAO;
+import service.CountryService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,8 +17,8 @@ public class AutoUpdateCountryServlet extends HttpServlet {
         this.doGet(request, response);
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (CountryDAO countryDAO = new CountryDAO()) {
-            countryDAO.autoUpdateCountry();
+        try (CountryService service = new CountryService()) {
+            service.autoUpdateCountry();
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }

@@ -2,7 +2,7 @@
          pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
-<jsp:useBean id="listNews" scope="request" type="java.util.List"/>
+<%--<jsp:useBean id="listNews" scope="request" type="java.util.List"/>--%>
 
 <html>
 <head>

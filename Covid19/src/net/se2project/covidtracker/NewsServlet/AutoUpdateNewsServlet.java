@@ -1,6 +1,8 @@
 package net.se2project.covidtracker.NewsServlet;
 
-import net.se2project.covidtracker.dao.NewsDao;
+
+import service.NewsService;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,8 +19,8 @@ public class AutoUpdateNewsServlet extends HttpServlet {
         this.doGet(request, response);
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (NewsDao newsDao = new NewsDao()) {
-            newsDao.autoUpdateNews();
+        try (NewsService service = new NewsService()) {
+            service.autoUpdateNews();
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }

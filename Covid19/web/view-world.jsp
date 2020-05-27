@@ -201,7 +201,6 @@ var myPieChart = new Chart(ctxP, {
         type: 'line',
         data: {
             labels: [
-                <jsp:useBean id="listChart" scope="request" type="java.util.List"/>
                 <c:forEach var="chart" items="${listChart}" varStatus="loop">
                 "${chart.date}"${!loop.last ? ',' : ''}
                 </c:forEach>

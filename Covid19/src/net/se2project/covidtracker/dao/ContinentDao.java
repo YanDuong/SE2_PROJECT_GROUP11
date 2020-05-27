@@ -1,12 +1,15 @@
 package net.se2project.covidtracker.dao;
 
 import net.se2project.covidtracker.model.Continent;
-
 import net.se2project.covidtracker.model.Vietnam;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import connect.DBConnection;
+import daoi.ContinentDAOI;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,9 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static connect.DBConnect.getConnection;
-
-//Scraping Data
 
 /**
  * AbstractDAO.java This DAO class provides CRUD database operations for the
@@ -30,7 +30,7 @@ import static connect.DBConnect.getConnection;
  * @author Khang
  *
  */
-public class ContinentDao implements AutoCloseable {
+public class ContinentDao implements AutoCloseable, ContinentDAOI {
 
     private static final String INSERT_CONTINENT_SQL = "INSERT INTO continent" + "  (country_name, total_cases," +
             " new_cases, total_death,new_death,total_recovered,active_cases,critical_cases) VALUES "
@@ -50,7 +50,7 @@ public class ContinentDao implements AutoCloseable {
 
     private static final String SELECT_ALL_PROVINCE = "select * from city;";
 
-    public ContinentDao() throws SQLException {
+    public ContinentDao()  {
     }
 
 
@@ -60,7 +60,8 @@ public class ContinentDao implements AutoCloseable {
         resetContinentId();
         timeUpdate();
 
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_CONTINENT_SQL)) {
 
             String url = "https://www.worldometers.info/coronavirus/";
@@ -119,7 +120,6 @@ public class ContinentDao implements AutoCloseable {
         return rowAutoUpdated;
     }
 
-    //vietnam
     public static final boolean containsDigit(String s) {
         boolean containsDigit = false;
 
@@ -134,11 +134,10 @@ public class ContinentDao implements AutoCloseable {
         return containsDigit;
     }
 
-
-
     public List<Vietnam> selectAllProvince() {
         List<Vietnam> provinces = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_PROVINCE);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -157,10 +156,10 @@ public class ContinentDao implements AutoCloseable {
         return provinces;
     }
 
-
     public boolean autoUpdateVietnam() throws SQLException, IOException, NumberFormatException, ParseException {
         boolean rowAutoUpdated = false;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_PROVINCE_SQL)) {
 
             String url = "https://vi.wikipedia.org/wiki/%C4%90%E1%BA%A1i_d%E1%BB%8Bch_COVID-19_t%E1%BA%A1i_Vi%E1%BB%87t_Nam";
@@ -206,7 +205,8 @@ public class ContinentDao implements AutoCloseable {
     public boolean autoUpdateViwetnam() throws SQLException, IOException, NumberFormatException, ParseException {
         boolean rowAutoUpdated = false;
 
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_PROVINCE_SQL)) {
 
             String url = "https://vi.wikipedia.org/wiki/%C4%90%E1%BA%A1i_d%E1%BB%8Bch_COVID-19_t%E1%BA%A1i_Vi%E1%BB%87t_Nam";
@@ -238,31 +238,12 @@ public class ContinentDao implements AutoCloseable {
         String timeUpdate = dtf.format(now);
         return timeUpdate;
     }
-    /*
-        public void insertContinent(Continent continent) throws SQLException {
-            System.out.println(INSERT_CONTINENT_SQL);
-            // try-with-resource statement will auto close the connection.
-            try (Connection connection = getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CONTINENT_SQL)) {
-                preparedStatement.setString(1, continent.getCountry_name());
-                preparedStatement.setString(2, continent.getTotal_cases());
-                preparedStatement.setString(3, continent.getNew_cases());
-                preparedStatement.setString(4, continent.getTotal_death());
-                preparedStatement.setString(5, continent.getNew_death());
-                preparedStatement.setString(6, continent.getTotal_recovered());
-                preparedStatement.setString(7, continent.getActive_cases());
-                preparedStatement.setString(8, continent.getCritical_cases());
 
-                System.out.println(preparedStatement);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                printSQLException(e);
-            }
-        }
-    */
+
     public Continent selectContinent(int id) {
         Continent continent = null;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_CONTINENT_BY_ID);) {
             preparedStatement.setInt(1, id);
             System.out.println(preparedStatement);
@@ -290,7 +271,8 @@ public class ContinentDao implements AutoCloseable {
     public List<Continent> listTotal() {
 
         List<Continent> total = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOTAL);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -317,7 +299,8 @@ public class ContinentDao implements AutoCloseable {
     public List<Continent> listTotalProvince() {
 
         List<Continent> total = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOTAL_VIETNAM);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -340,9 +323,11 @@ public class ContinentDao implements AutoCloseable {
         return total;
     }
 
+
     public List<Continent> selectAllContinent() {
         List<Continent> continents = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_CONTINENT);) {
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -365,9 +350,11 @@ public class ContinentDao implements AutoCloseable {
         return continents;
     }
 
+
     public boolean deleteContinent(int id) throws SQLException {
         boolean rowDeleted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_CONTINENT_SQL);) {
             statement.setInt(1, id);
             rowDeleted = statement.executeUpdate() > 0;
@@ -376,18 +363,22 @@ public class ContinentDao implements AutoCloseable {
         return rowDeleted;
     }
 
+
     public boolean deleteAllContinent() throws SQLException {
         boolean rowAllDeleted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_ALL_CONTINENT);) {
             rowAllDeleted = statement.executeUpdate() > 0;
         }
         return rowAllDeleted;
     }
 
+
     public boolean resetContinentId() throws SQLException {
         boolean tableReserted;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(RESET_CONTINENT_ID);) {
             tableReserted = statement.executeUpdate() > 0;
         }
@@ -397,7 +388,8 @@ public class ContinentDao implements AutoCloseable {
 
     public boolean updateContinent(Continent continent) throws SQLException {
         boolean rowUpdated;
-        try (Connection connection = getConnection();
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_CONTINENT_SQL);) {
             statement.setString(1, continent.getCountry_name());
             statement.setInt(2, continent.getTotal_cases());
@@ -416,6 +408,7 @@ public class ContinentDao implements AutoCloseable {
         return rowUpdated;
     }
 
+
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
             if (e instanceof SQLException) {
@@ -432,16 +425,14 @@ public class ContinentDao implements AutoCloseable {
         }
     }
 
+
     public Continent findTotal(int id) {
         Integer i = id;
-
-        if (i == null) {
-            return null;
-        }
-
         Continent artc = new Continent();
         artc.setCountry_name("Placeholder");
-        try (PreparedStatement ps = getConnection().prepareStatement(SELECT_TOTAL)) {
+        try (DBConnection dbhelper = DBConnection.getDBHelper();
+        		Connection connection = dbhelper.getConnection();
+        		PreparedStatement ps = connection.prepareStatement(SELECT_TOTAL)) {
             ps.setInt(1, i);
             ResultSet rs = ps.executeQuery();
 
@@ -465,6 +456,7 @@ public class ContinentDao implements AutoCloseable {
         return artc;
     }
 
+
     @Override
     public void close() throws Exception {
 
@@ -474,7 +466,8 @@ public class ContinentDao implements AutoCloseable {
     public boolean insertContinent(Continent continent) throws SQLException {
         boolean a = false;
         String sql = "SELECT * FROM continent WHERE country_name = ?";
-        Connection connection = getConnection();
+        DBConnection dbhelper = DBConnection.getDBHelper();
+		Connection connection = dbhelper.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, continent.getCountry_name());
 

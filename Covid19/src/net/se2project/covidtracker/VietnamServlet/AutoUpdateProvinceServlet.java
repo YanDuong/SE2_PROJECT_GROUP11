@@ -1,6 +1,7 @@
 package net.se2project.covidtracker.VietnamServlet;
 
-import net.se2project.covidtracker.dao.VietnamDAO;
+
+import service.VietnamService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,8 +19,8 @@ public class AutoUpdateProvinceServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (VietnamDAO vietnamDAO = new VietnamDAO()) {
-            vietnamDAO.autoUpdateVietnam();
+        try (VietnamService service = new VietnamService()) {
+        	service.autoUpdateVietnam();
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }

@@ -1,7 +1,8 @@
 package net.se2project.covidtracker.VietnamServlet;
 
-import net.se2project.covidtracker.dao.VietnamDAO;
+
 import net.se2project.covidtracker.model.Vietnam;
+import service.VietnamService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -21,8 +22,8 @@ public class GetAllProvinceServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (VietnamDAO vietnamDAO = new VietnamDAO()) {
-            List<Vietnam> listProvince = vietnamDAO.selectAllProvince();
+        try (VietnamService service = new VietnamService()) {
+            List<Vietnam> listProvince = service.selectAllProvince();
             request.setAttribute("listCountry", listProvince);
             RequestDispatcher dispatcher = request.getRequestDispatcher("view-vietnam.jsp");
             dispatcher.forward(request, response);
