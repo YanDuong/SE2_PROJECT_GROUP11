@@ -67,7 +67,7 @@
                     </fieldset>
 
 
-                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to save changes?');">Save</button>
                         <button class="btn btn-danger" onclick="window.location.href='/ShowAllProvinceServlet'">Cancel</button>
 
                 </form>

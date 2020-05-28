@@ -104,7 +104,7 @@
                         <%if (session.getAttribute("admin") != null){%>
                         <td>
                             <a href="EditCountryServlet?id=<c:out value='${country.id}'/>"><i class="fas fa-pencil-alt"></i> &nbsp;&nbsp;</a>
-                            <a href="DeleteCountryServlet?id=<c:out value='${country.id}' />" onclick="return confirm('Are you sure you want to delete this item?');"><i class="fas fa-trash"></i></a>
+                            <a href="DeleteCountryServlet?id=<c:out value='${country.id}' />" onclick="return confirm('Are you sure you want to delete ${country.country_name}?');"><i class="fas fa-trash"></i></a>
                         </td>
                         <%}%>
                     </tr>
