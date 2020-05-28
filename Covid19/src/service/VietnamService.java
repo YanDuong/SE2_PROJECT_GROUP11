@@ -53,7 +53,7 @@ public class VietnamService implements AutoCloseable{
 	}
 
 	@Override
-	public void close() throws SQLException {
+	public void close() {
 
 	}
 }

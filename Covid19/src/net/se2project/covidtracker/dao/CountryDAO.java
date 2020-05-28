@@ -1,7 +1,6 @@
 package net.se2project.covidtracker.dao;
 
 import net.se2project.covidtracker.model.Country;
-import net.se2project.covidtracker.model.Vietnam;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,8 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +53,6 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
         boolean rowAutoUpdated = false;
         deleteAllCountry();
         resetCountriesId();
-        timeUpdate();
 
         try (DBConnection dbhelper = DBConnection.getDBHelper();
         		Connection connection = dbhelper.getConnection();
@@ -141,114 +137,6 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
 
 
     @Override
-    public List<Vietnam> selectAllProvince() {
-        List<Vietnam> provinces = new ArrayList<>();
-        try (DBConnection dbhelper = DBConnection.getDBHelper();
-        		Connection connection = dbhelper.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_PROVINCE);) {
-            System.out.println(preparedStatement);
-            ResultSet rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String province_name = rs.getString("country_name");
-                int total_cases = rs.getInt("total_cases");
-                int active_cases = rs.getInt("active_cases");
-                int total_death = rs.getInt("total_death");
-                int total_recovered = rs.getInt("total_recovered");
-                provinces.add(new Vietnam(id, province_name, total_cases, active_cases, total_death, total_recovered));
-            }
-        } catch (SQLException e) {
-            printSQLException(e);
-        }
-        return provinces;
-    }
-
-
-    public boolean autoUpdateVietnam() throws SQLException, IOException, NumberFormatException, ParseException {
-        boolean rowAutoUpdated = false;
-        try (DBConnection dbhelper = DBConnection.getDBHelper();
-        		Connection connection = dbhelper.getConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT_PROVINCE_SQL)) {
-
-            String url = "https://vi.wikipedia.org/wiki/%C4%90%E1%BA%A1i_d%E1%BB%8Bch_COVID-19_t%E1%BA%A1i_Vi%E1%BB%87t_Nam";
-            Document doc = Jsoup.connect(url).get();
-            Element tableElement = doc.select("table").get(3);
-
-            Elements tableRowElements = tableElement.select(":not(thead) tr");
-
-
-            for (int i = 0; i < tableRowElements.size(); i++) {
-                Element row = tableRowElements.get(i);
-                Elements rowItems = row.select("td");
-                int b = 0;
-                for (int j = 0; j < rowItems.size(); j++) {
-                    b += 1;
-                    String temp = rowItems.get(j).text();
-                    if (b == 6) {
-                        j = j + 3;
-                        b = 1;
-                    } else if (b == 1) {
-                        statement.setString(1, temp);
-                    } else if (b == 2) {
-                        statement.setString(2, temp);
-                    } else if (b == 3) {
-                        statement.setString(3, temp);
-                    } else if (b == 4) {
-                        statement.setString(4, temp);
-                    } else if (b == 5) {
-                        statement.setString(5, temp);
-                        b = 0;
-                        System.out.println(statement);
-                        rowAutoUpdated = statement.executeUpdate() > 0;
-                    } else {
-                        System.out.println("Err");
-                    }
-                }
-            }
-        }
-        return rowAutoUpdated;
-    }
-
-    //Vietnam
-    public boolean autoUpdateViwetnam() throws SQLException, IOException, NumberFormatException, ParseException {
-        boolean rowAutoUpdated = false;
-
-        try (DBConnection dbhelper = DBConnection.getDBHelper();
-        		Connection connection = dbhelper.getConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT_PROVINCE_SQL)) {
-
-            String url = "https://vi.wikipedia.org/wiki/%C4%90%E1%BA%A1i_d%E1%BB%8Bch_COVID-19_t%E1%BA%A1i_Vi%E1%BB%87t_Nam";
-            Document doc = Jsoup.connect(url).get();
-            Element tableElement = doc.select("table").get(3);
-
-            Elements tableRowElements = tableElement.select(":not(thead) tr");
-
-            for (int i = 0; i < tableRowElements.size(); i++) {
-                Element row = tableRowElements.get(i);
-                Elements rowItems = row.select("td");
-                String temp = "";
-
-                for (int j = 0; j < rowItems.size(); j++) {
-                    temp = rowItems.get(j).text();
-                    statement.setString(1, temp);
-                    System.out.println(statement);
-                    rowAutoUpdated = statement.executeUpdate() > 0;
-                }
-            }
-        }
-        return rowAutoUpdated;
-    }
-
-    
-    public String timeUpdate() throws SQLException {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        String timeUpdate = dtf.format(now);
-        return timeUpdate;
-    }
-
-
-    @Override
     public Country selectCountry(int id) {
         Country country = null;
         try (DBConnection dbhelper = DBConnection.getDBHelper();
@@ -277,9 +165,7 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
     }
 
 
-    @Override
     public List<Country> listTotal() {
-
         List<Country> total = new ArrayList<>();
         try (DBConnection dbhelper = DBConnection.getDBHelper();
         		Connection connection = dbhelper.getConnection();
@@ -306,7 +192,6 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
     }
 
 
-    @Override
     public List<Country> listTotalProvince() {
 
         List<Country> total = new ArrayList<>();

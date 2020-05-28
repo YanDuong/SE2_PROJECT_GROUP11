@@ -35,7 +35,7 @@ public class VietnamDAO implements AutoCloseable, VietnamDAOI {
 
     private static final String SELECT_PROVINCE_BY_ID = "select id,country_name, total_cases, active_cases,total_recovered, total_death from city where id =?";
 
-    public VietnamDAO() throws SQLException{
+    public VietnamDAO() {
     }
 
     @Override
@@ -150,6 +150,7 @@ public class VietnamDAO implements AutoCloseable, VietnamDAOI {
         return rowAllDeleted;
     }
 
+    @Override
     public List<Vietnam> listProvinceTotal() {
         List<Vietnam> total = new ArrayList<>();
         try (DBConnection dbhelper = DBConnection.getDBHelper();
@@ -271,7 +272,7 @@ public class VietnamDAO implements AutoCloseable, VietnamDAOI {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 

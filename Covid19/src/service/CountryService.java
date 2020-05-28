@@ -21,24 +21,8 @@ public class CountryService implements AutoCloseable {
 	return countryDAOI.autoUpdateCountry();
 	}
 
-	public List<Vietnam> selectAllProvince() throws SQLException{
-		return countryDAOI.selectAllProvince();
-	}
-
-	public boolean autoUpdateVietnam() throws SQLException, IOException, NumberFormatException, ParseException {
-		return countryDAOI.autoUpdateVietnam();
-	}
-
 	public Country selectCountry(int id) throws SQLException {
 		return countryDAOI.selectCountry(id);
-	}
-
-	public List<Country> listTotal() throws SQLException{
-		return countryDAOI.listTotal();
-	}
-
-	public List<Country> listTotalProvince() throws SQLException{
-		return countryDAOI.listTotalProvince();
 	}
 
 	public boolean deleteCountry(int id) throws SQLException {
