@@ -25,28 +25,12 @@ public class ContinentService implements AutoCloseable{
 		return continentDaoi.autoUpdateContinent();
 	}
 
-	public boolean autoUpdateVietNam() throws SQLException, IOException, NumberFormatException, ParseException {
-		return continentDaoi.autoUpdateVietnam();
-	}
-
 	public Continent selectContinent(int id) throws SQLException, ParseException {
 		return continentDaoi.selectContinent(id);
 	}
 
 	public boolean updateContinent(Continent c) throws SQLException, ParseException  {
 		return continentDaoi.updateContinent(c);
-	}
-
-	public List<Continent> listTotal() throws SQLException, ParseException{
-		return continentDaoi.listTotal();
-	}
-
-	public List<Continent> listTotalProvince() throws SQLException, ParseException {
-		return continentDaoi.listTotalProvince();
-	}
-
-	public List<Vietnam> selectAllProvince() throws SQLException, ParseException {
-		return continentDaoi.selectAllProvince();
 	}
 
 	public List<Continent> selectAllContinent() throws SQLException, ParseException {
@@ -65,12 +49,8 @@ public class ContinentService implements AutoCloseable{
 		return continentDaoi.resetContinentId();
 	}
 
-	public Continent findTotal(int id) throws SQLException, ParseException {
-		return continentDaoi.findTotal(id);
-	}
-
 	@Override
-	public void close() throws SQLException {
+	public void close() {
 
 	}
 

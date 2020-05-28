@@ -10,11 +10,7 @@ import java.util.List;
 public interface CountryDAOI {
 
     boolean autoUpdateCountry() throws SQLException, IOException, NumberFormatException, ParseException ;
-    List<Vietnam> selectAllProvince() throws SQLException;
-    boolean autoUpdateVietnam() throws SQLException, IOException, NumberFormatException, ParseException ;
     Country selectCountry(int id) throws SQLException;
-    List<Country> listTotal() throws SQLException;
-    List<Country> listTotalProvince() throws SQLException;
     boolean deleteCountry(int id) throws SQLException;
     List<Country> selectAllCountries() throws SQLException;
     boolean updateCountry(Country c) throws SQLException;
