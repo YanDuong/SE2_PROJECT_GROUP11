@@ -45,6 +45,7 @@ public class NewsDAO implements AutoCloseable, NewsDAOI {
             System.out.println(elements.size());
             for (int i = 0; i < elements.size(); i++) {
                 boolean withoutTest = elements.get(i).hasClass("wait-render");
+
                 if (!withoutTest){
                     Element element = elements.get(i);
                     if(i == 50){
@@ -54,7 +55,6 @@ public class NewsDAO implements AutoCloseable, NewsDAOI {
                     Element elementTitle = element.select("a[href]").first();
                     Element elementSourceMeta = element.getElementsByClass("source").first();
                     Element elementTime = element.select(".time.friendly").first();
-
 
                     statement.setString(1, elementImg.attr("alt"));
                     statement.setString(2, elementTitle.attr("href"));

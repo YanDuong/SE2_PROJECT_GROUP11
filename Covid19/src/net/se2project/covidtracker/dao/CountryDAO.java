@@ -83,7 +83,7 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
                             temp = temp;
                         }
                     }
-                    if (b == 10) {
+                    if (b == 11) {
                         j = j + 3;
                         b = 1;
                     } else if (b == 1) {
@@ -105,9 +105,9 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
                         statement.setInt(5, temp2);
                     } else if (b == 7) {
                         statement.setInt(6, temp2);
-                    } else if (b == 8) {
-                        statement.setInt(7, temp2);
                     } else if (b == 9) {
+                        statement.setInt(7, temp2);
+                    } else if (b == 10) {
                         statement.setInt(8, temp2);
                         System.out.println(statement);
                         rowAutoUpdated = statement.executeUpdate() > 0;
@@ -370,9 +370,6 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
         String sql = "SELECT * FROM country WHERE country_name = ?";
         DBConnection dbhelper = DBConnection.getDBHelper();
 		Connection connection = dbhelper.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, country.getCountry_name());
-
 
         try (PreparedStatement checkAccountExists = connection.prepareStatement(sql)) {
             checkAccountExists.setString(1, country.getCountry_name());

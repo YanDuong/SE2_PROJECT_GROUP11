@@ -24,8 +24,8 @@ public class ChartService implements AutoCloseable {
 		chartDAO.deleteAllChart();
 	}
 
-	public void resetChartId() throws SQLException{
-		chartDAO.resetChartId();
+	public boolean resetChartId() throws SQLException{
+		return chartDAO.resetChartId();
 	}
 
 	public List<Chart> selectAllChart() {

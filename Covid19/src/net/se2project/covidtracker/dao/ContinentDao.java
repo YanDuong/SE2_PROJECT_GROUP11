@@ -82,7 +82,7 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
                             temp2 = Integer.parseInt(temp);
                         }
                     }
-                    if (b == 10) {
+                    if (b == 11) {
                         j = j + 3;
                         b = 1;
                     } else if (b == 2) {
@@ -100,9 +100,9 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
                         statement.setInt(5, temp2);
                     } else if (b == 7) {
                         statement.setInt(6, temp2);
-                    } else if (b == 8) {
-                        statement.setInt(7, temp2);
                     } else if (b == 9) {
+                        statement.setInt(7, temp2);
+                    } else if (b == 10) {
                         statement.setInt(8, temp2);
                         System.out.println(statement);
                         rowAutoUpdated = statement.executeUpdate() > 0;
@@ -348,9 +348,6 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
         String sql = "SELECT * FROM continent WHERE country_name = ?";
         DBConnection dbhelper = DBConnection.getDBHelper();
 		Connection connection = dbhelper.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, continent.getCountry_name());
-
 
         try (PreparedStatement checkContinentExists = connection.prepareStatement(sql)) {
             checkContinentExists.setString(1, continent.getCountry_name());

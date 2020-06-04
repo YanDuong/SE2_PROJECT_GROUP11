@@ -139,13 +139,15 @@ public class ChartDao implements AutoCloseable, ChartDAOI {
         return charts;
     }
     @Override
-    public void resetChartId() throws SQLException {
+    public boolean resetChartId() throws SQLException {
+        boolean tableReserted;
         try (DBConnection dbhelper = DBConnection.getDBHelper();
         		Connection connection = dbhelper.getConnection();
              PreparedStatement statement = connection.prepareStatement(RESET_PROVINCE_ID);) {
-            statement.executeUpdate();
+            tableReserted = statement.executeUpdate() > 0;
             System.out.println(statement);
         }
+        return tableReserted;
     }
     
     @Override
