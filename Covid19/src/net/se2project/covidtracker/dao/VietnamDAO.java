@@ -226,8 +226,6 @@ public class VietnamDAO implements AutoCloseable, VietnamDAOI {
         String sql = "SELECT * FROM city WHERE country_name = ?";
         DBConnection dbhelper = DBConnection.getDBHelper();
 		Connection connection = dbhelper.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, v.getCountry_name());
 
         try (PreparedStatement checkAccountExists = connection.prepareStatement(sql)) {
             checkAccountExists.setString(1, v.getCountry_name());

@@ -11,7 +11,7 @@ public interface ChartDAOI {
 
 	void autoUpdateChart() throws SQLException, IOException, NumberFormatException, ParseException ;
 	List<Chart> selectAllChart();
-	void resetChartId() throws SQLException;
+	boolean resetChartId() throws SQLException;
 	List<Chart> selectAllWorldChart();
 	void deleteAllChart() throws SQLException;
 }

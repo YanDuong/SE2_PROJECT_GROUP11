@@ -40,6 +40,9 @@ public class CountryService implements AutoCloseable {
 	public boolean deleteAllCountry() throws SQLException {
 		return countryDAOI.deleteAllCountry();
 	}
+	public boolean resetCountriesId() throws SQLException {
+		return countryDAOI.resetCountriesId();
+	}
 
 	public Country findTotal(int id) throws SQLException {
 		return countryDAOI.findTotal(id);
