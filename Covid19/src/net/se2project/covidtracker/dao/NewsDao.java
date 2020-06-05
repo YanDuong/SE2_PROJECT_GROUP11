@@ -58,12 +58,12 @@ public class NewsDAO implements AutoCloseable, NewsDAOI {
 
                     statement.setString(1, elementImg.attr("alt"));
                     statement.setString(2, elementTitle.attr("href"));
-                    if(elementImg.attr("src").equals("")){
-                        statement.setString(3, elementImg.attr("data-src"));
-                    }else {
+                    if(elementImg.attr("data-src").equals("")){
                         statement.setString(3, elementImg.attr("src"));
+                    }else {
+                        statement.setString(3, elementImg.attr("data-src"));
                     }
-                    statement.setString(4,  elementSourceMeta.text());
+                    statement.setString(4,   elementSourceMeta.text());
 
                     String a =  elementTime.attr("datetime");
                     if(a.length() > 10) {
