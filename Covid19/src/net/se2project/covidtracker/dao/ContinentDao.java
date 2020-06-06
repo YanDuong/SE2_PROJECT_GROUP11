@@ -65,8 +65,7 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
 
             Elements tableRowElements = tableElement.select(":not(thead) tr");
 
-            for (int i = 0; i < tableRowElements.size(); i++) {
-                Element row = tableRowElements.get(i);
+            for (Element row : tableRowElements) {
                 Elements rowItems = row.select("td");
                 int b = 0;
                 for (int j = 0; j < rowItems.size(); j++) {
@@ -77,7 +76,7 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
                         continue;
                     } else {
                         temp = rowItems.get(j).text();
-                        if(containsDigit(temp)){
+                        if (containsDigit(temp)) {
                             temp = temp.replaceAll("[^a-zA-Z0-9]", "");
                             temp2 = Integer.parseInt(temp);
                         }
@@ -86,10 +85,13 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
                         j = j + 3;
                         b = 1;
                     } else if (b == 2) {
-                        if (temp.equals("Total:")|| temp.equals("A")) {
+                        if ( temp.equals("North America") || temp.equals("Europe") ||
+                                temp.equals("South America") || temp.equals("Asia") || temp.equals("Africa") ||
+                                temp.equals("Oceania")) {
+                            statement.setString(1, temp);
+                        }else {
                             break;
                         }
-                        statement.setString(1, temp);
                     } else if (b == 3) {
                         statement.setInt(2, temp2);
                     } else if (b == 4) {
@@ -100,10 +102,10 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
                         statement.setInt(5, temp2);
                     } else if (b == 7) {
                         statement.setInt(6, temp2);
+                    } else if (b == 8) {
+                        statement.setInt(8, temp2);
                     } else if (b == 9) {
                         statement.setInt(7, temp2);
-                    } else if (b == 10) {
-                        statement.setInt(8, temp2);
                         System.out.println(statement);
                         rowAutoUpdated = statement.executeUpdate() > 0;
                     } else {
