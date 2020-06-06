@@ -3,6 +3,7 @@
 <%@ page import="net.se2project.covidtracker.dao.CountryDAO" %>
 <%@ page import="net.se2project.covidtracker.model.Country" %>
 <%@ page import="java.sql.SQLException" %>
+<%@ page import="service.CountryService" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 <html>
@@ -19,14 +20,19 @@
 </head>
 <body>
 <%
-    CountryDAO total = null;
+    CountryService total = null;
     try {
-        total = new CountryDAO();
+        total = new CountryService();
     } catch (SQLException throwables) {
         throwables.printStackTrace();
     }
     assert total != null;
-    List<Country> tol = total.listTotalProvince();
+    List<Country> tol = null;
+    try {
+        tol = total.listTotalProvince();
+    } catch (SQLException throwables) {
+        throwables.printStackTrace();
+    }
     if (tol != null) {
         for (Country c : tol) {%>
 <!--================End Feature Area =================-->

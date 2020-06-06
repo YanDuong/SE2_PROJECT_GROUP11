@@ -16,6 +16,8 @@ public interface CountryDAOI {
     boolean updateCountry(Country c) throws SQLException;
     boolean deleteAllCountry() throws SQLException;
     Country findTotal(int id) throws SQLException;
+    List<Country> listTotal() throws SQLException;
+    List<Country> listTotalProvince() throws SQLException;
     boolean insertCountry(Country c) throws SQLException;
     boolean resetCountriesId() throws SQLException;
 }

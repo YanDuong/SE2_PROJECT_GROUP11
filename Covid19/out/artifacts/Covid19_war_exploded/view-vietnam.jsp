@@ -2,6 +2,7 @@
 <%@ page import="net.se2project.covidtracker.dao.CountryDAO" %>
 <%@ page import="net.se2project.covidtracker.model.Country" %>
 <%@ page import="java.sql.SQLException" %>
+<%@ page import="service.CountryService" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -118,13 +119,16 @@
 
 <script>
     <%
-        CountryDAO total = null;
+        CountryService total = null;
         try {
-        total = new CountryDAO();} catch (SQLException throwables) {
+        total = new CountryService();} catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         assert total != null;
-        List<Country> tol = total.listTotalProvince();
+        List<Country> tol = null;try {
+        tol = total.listTotalProvince();} catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         if (tol != null) {
         for (Country c : tol) {%>
 
