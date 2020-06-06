@@ -24,4 +24,8 @@ public class DAOFactory {
 	public static ChartDAOI getChartDAO() throws SQLException {
 		return new ChartDao();
 	}
+
+	public static UserDAOI getUserDAO() throws SQLException{
+		return new UserDAO();
+	}
 }

@@ -26,11 +26,11 @@ class UserTest {
 	@Test
 	void testLogin() throws SQLException, ClassNotFoundException {
 		expectedUser1 = new Admin(1, "Tran Van Khang", "vankhang@gmail.com", "123456");
-		expectedUser2 = new Admin(2, "Do Hong Hue", "hue@gmail.com", "123456");
-		expectedUser3 = new Admin(3, "Pham Thi Quynh", "quynh@gmail.com", "123456");
+		expectedUser2 = new Admin(2, "Nguyen Van A", "a@gmail.com", "123456");
+		expectedUser3 = new Admin(3, "Nguyen Van B", "b@gmail.com", "123456");
 		 actualUser1 = service.checkLogin("vankhang@gmail.com", "123456");
-	actualUser2 = service.checkLogin("hue@gmail.com", "123456");
-	actualUser3 = service.checkLogin("quynh@gmai.com", "123456");
+	actualUser2 = service.checkLogin("a@gmail.com", "123456");
+	actualUser3 = service.checkLogin("b@gmai.com", "123456");
 	//test admin 1
 	 assertEquals(expectedUser1.getAdmin_id(), actualUser1.getAdmin_id());
 	assertEquals(expectedUser1.getName(), actualUser1.getName());

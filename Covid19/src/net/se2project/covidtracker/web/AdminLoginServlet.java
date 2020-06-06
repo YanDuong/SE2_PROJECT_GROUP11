@@ -10,7 +10,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-import net.se2project.covidtracker.dao.UserDAO;
+import service.AdminService;
 import net.se2project.covidtracker.model.Admin;
 
 @WebServlet("/login")
@@ -31,7 +31,12 @@ public class AdminLoginServlet extends HttpServlet {
 
         Map<String, String> errors = new HashMap<String, String>();
 
-        UserDAO userDao = new UserDAO();
+        AdminService userDao = null;
+        try {
+            userDao = new AdminService();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
         try {
             Admin admin = userDao.checkLogin(email, password);
