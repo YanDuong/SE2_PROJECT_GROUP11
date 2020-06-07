@@ -56,9 +56,7 @@ public class ChartDao implements AutoCloseable, ChartDAOI {
                     if (b == 6) {
                         b = 1;
                     }else if (b == 1){
-                        if(token.equals("Vietnam") || token.equals("North America") || token.equals("Europe")
-                                || token.equals("South America")|| token.equals("Asia")|| token.equals("Africa")|| token.equals("Oceania")
-                                || token.equals("World")|| token.equals("USA")
+                        if(token.equals("Vietnam") || token.equals("World")
                         ){
                             statement.setString(1, token);
                             System.out.println(statement);

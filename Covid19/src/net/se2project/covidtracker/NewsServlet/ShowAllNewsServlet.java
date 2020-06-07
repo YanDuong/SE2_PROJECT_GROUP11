@@ -1,6 +1,5 @@
 package net.se2project.covidtracker.NewsServlet;
 
-import net.se2project.covidtracker.dao.NewsDAO;
 import net.se2project.covidtracker.model.News;
 import service.NewsService;
 

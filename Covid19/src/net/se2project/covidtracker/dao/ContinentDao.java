@@ -81,7 +81,7 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
                             temp2 = Integer.parseInt(temp);
                         }
                     }
-                    if (b == 11) {
+                    if (b == 10) {
                         j = j + 3;
                         b = 1;
                     } else if (b == 2) {
