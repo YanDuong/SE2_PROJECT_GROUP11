@@ -389,7 +389,7 @@ public class CountryDAO implements AutoCloseable, CountryDAOI {
                         insert.setInt(8, country.getCritical_cases());
 
                         System.out.println(insert);
-                        insert.executeUpdate();
+                        a = insert.executeUpdate()>0;
                     } catch (SQLException e) {
                         printSQLException(e);
                     }

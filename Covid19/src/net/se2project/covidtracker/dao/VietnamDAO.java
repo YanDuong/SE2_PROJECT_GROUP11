@@ -242,7 +242,7 @@ public class VietnamDAO implements AutoCloseable, VietnamDAOI {
                         insert.setInt(5, v.getTotal_death());
 
                         System.out.println(insert);
-                        insert.executeUpdate();
+                        a = insert.executeUpdate()>0;
                     } catch (SQLException e) {
                         printSQLException(e);
                     }

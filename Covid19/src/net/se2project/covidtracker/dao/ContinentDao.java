@@ -369,7 +369,7 @@ public class ContinentDao implements AutoCloseable, ContinentDAOI {
                         insert.setInt(8, continent.getCritical_cases());
 
                         System.out.println(insert);
-                        insert.executeUpdate();
+                        a = insert.executeUpdate()>0;
                     } catch (SQLException e) {
                         printSQLException(e);
                     }
