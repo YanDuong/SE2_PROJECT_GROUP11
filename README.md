@@ -16,6 +16,8 @@ In our project we mainly use tools:
 - There is a file name "daily-cases-covid-19.csv" locate at "src". You need to coppy absolute path of this file and change the line at file "ChartDao.java" at 'Covid19\src\net\se2project\covidtracker\dao' line 46. 
 - Run Tomcat along with project. GOOD TO GO. 
 
+-If you user Eclipse. Create an empty Dynamic Web Application then coppy manually file at "src" + "web content".
+
 
 # Important!
 - In test part. The statistic is changing overtime. So we need to update the instant of object when we run test again.
